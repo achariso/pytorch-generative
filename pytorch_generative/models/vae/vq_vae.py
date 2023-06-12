@@ -12,8 +12,8 @@ References (used throughout the code):
     [1]: https://arxiv.org/pdf/1711.00937.pdf
 """
 
-from pytorch_generative.models import base
-from pytorch_generative.models.vae import vaes
+from ants.pg.pytorch_generative.models import base
+from ants.pg.pytorch_generative.models.vae import vaes
 
 
 class VectorQuantizedVAE(base.VariationalAutoEncoder):
@@ -108,7 +108,7 @@ def reproduce(
     from torch.nn import functional as F
     from torch.optim import lr_scheduler
 
-    from pytorch_generative import datasets, models, trainer
+    from ants.pg.pytorch_generative import datasets, models, trainer
 
     train_loader, test_loader = debug_loader, debug_loader
     if train_loader is None:

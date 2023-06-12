@@ -63,7 +63,7 @@ You can then import `pytorch-generative` like any other library:
 
 ```python
 import pytorch_generative as pg_nn
-from pytorch_generative import models
+from ants.pg.pytorch_generative import models
 ...
 ```
 
@@ -72,7 +72,7 @@ from pytorch_generative import models
 Supported models are implemented as PyTorch Modules and are easy to use:
 
 ```python
-from pytorch_generative import models
+from ants.pg.pytorch_generative import models
 
 ... # Data loading code.
 
@@ -86,7 +86,7 @@ Alternatively, lower level building blocks in [pytorch_generative.nn](https://gi
 
 from torch import nn
 
-from pytorch_generative import nn as pg_nn
+from ants.pg.pytorch_generative import nn as pg_nn
 
 
 class TransformerBlock(nn.Module):

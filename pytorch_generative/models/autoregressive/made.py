@@ -16,7 +16,7 @@ import numpy as np
 import torch
 from torch import distributions, nn
 
-from pytorch_generative.models import base
+from ants.pg.pytorch_generative.models import base
 
 
 class MaskedLinear(nn.Linear):
@@ -159,7 +159,7 @@ def reproduce(
     from torch import optim
     from torch.nn import functional as F
 
-    from pytorch_generative import datasets, models, trainer
+    from ants.pg.pytorch_generative import datasets, models, trainer
 
     train_loader, test_loader = debug_loader, debug_loader
     if train_loader is None:

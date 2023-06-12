@@ -10,7 +10,7 @@ as p(f) = N(f | u(x), K(x, x').
 import numpy as np
 import torch
 
-from pytorch_generative.models import base
+from ants.pg.pytorch_generative.models import base
 
 
 # TODO(ehotaj): Generalize to multiple dimensions.
