@@ -16,7 +16,7 @@ def to_var(log_std):
 @torch.jit.script
 def unit_gaussian_kl_div(mean, log_std):
     """Returns `KL(p || N(0, 1))` where `p` is a Gaussian with diagonal covariance."""
-    return -0.5 * (1 + 2 * log_std - to_var(log_std) - mean**2)
+    return -0.5 * (1 + 2 * log_std - to_var(log_std) - mean ** 2)
 
 
 @torch.jit.script
@@ -109,10 +109,10 @@ class ResidualStack(nn.Module):
         super().__init__()
         self._net = nn.Sequential(
             *[
-                ResidualBlock(n_channels, hidden_channels)
-                for _ in range(n_residual_blocks)
-            ]
-            + [nn.ReLU()]
+                 ResidualBlock(n_channels, hidden_channels)
+                 for _ in range(n_residual_blocks)
+             ]
+             + [nn.ReLU()]
         )
 
     def forward(self, x):
@@ -123,13 +123,13 @@ class Encoder(nn.Module):
     """A feedforward encoder which downsamples its input."""
 
     def __init__(
-        self,
-        in_channels,
-        out_channels,
-        hidden_channels,
-        n_residual_blocks,
-        residual_channels,
-        stride,
+            self,
+            in_channels,
+            out_channels,
+            hidden_channels,
+            n_residual_blocks,
+            residual_channels,
+            stride,
     ):
         """Initializes a new Encoder instance.
 
@@ -184,13 +184,13 @@ class Decoder(nn.Module):
     """A feedforward encoder which upsamples its input."""
 
     def __init__(
-        self,
-        in_channels,
-        out_channels,
-        hidden_channels,
-        n_residual_blocks,
-        residual_channels,
-        stride,
+            self,
+            in_channels,
+            out_channels,
+            hidden_channels,
+            n_residual_blocks,
+            residual_channels,
+            stride,
     ):
         """Initializes a new Decoder instance.
 
@@ -244,20 +244,21 @@ class Decoder(nn.Module):
 class Quantizer(nn.Module):
     """Wraps a VectorQuantizer to handle input with arbitrary channels."""
 
-    def __init__(self, in_channels, n_embeddings, embedding_dim):
+    def __init__(self, in_channels, n_embeddings, embedding_dim, return_one_hot: bool = False):
         """Initializes a new Quantizer instance.
 
         Args:
             in_channels: Number of input channels.
             n_embeddings: Number of VectorQuantizer embeddings.
             embedding_dim: VectorQuantizer embedding dimension.
+            return_one_hot: Whether to return one-hot encoded quantized vectors.
         """
         super().__init__()
         self._net = nn.Sequential(
             nn.Conv2d(
                 in_channels=in_channels, out_channels=embedding_dim, kernel_size=1
             ),
-            pg_nn.VectorQuantizer(n_embeddings, embedding_dim),
+            pg_nn.VectorQuantizer(n_embeddings, embedding_dim, return_one_hot=return_one_hot),
         )
 
     def forward(self, x):

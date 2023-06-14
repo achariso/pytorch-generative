@@ -74,7 +74,7 @@ class VectorQuantizedVAE(base.VariationalAutoEncoder):
             Tuple of the forward pass result and the quantization loss.
         """
         x = self._encoder(x)
-        quantized, quantization_loss, _ = self._quantizer(x)
+        quantized, quantization_loss = self._quantizer(x)
         return self._decoder(quantized), quantization_loss
 
     def _sample(self, n_samples):

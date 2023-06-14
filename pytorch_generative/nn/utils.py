@@ -21,7 +21,12 @@ class VectorQuantizer(nn.Module):
     descent.
     """
 
-    def __init__(self, n_embeddings, embedding_dim, use_ema=True, ema_decay=0.99):
+    def __init__(self,
+                 n_embeddings: int,
+                 embedding_dim: int,
+                 use_ema: bool = True,
+                 ema_decay: float = 0.99,
+                 return_one_hot: bool = False):
         """Initializes a new VectorQuantizer instance.
 
         Args:
@@ -33,12 +38,14 @@ class VectorQuantizer(nn.Module):
                 embedding weights instead of gradient descent. Generally, EMA updates
                 lead to much faster convergence.
             ema_decay: Decay rate for exponential moving average parameters.
+            return_one_hot: Whether to return the one-hot encoding of the quantized input.
         """
         super().__init__()
         self.n_embeddings = n_embeddings
         self.embedding_dim = embedding_dim
         self._use_ema = use_ema
         self._decay = ema_decay
+        self.return_one_hot = return_one_hot
 
         embedding = torch.zeros(n_embeddings, embedding_dim)
         # TODO(eugenhotaj): Small optimization: create pre-initialized embedding.
@@ -60,9 +67,9 @@ class VectorQuantizer(nn.Module):
         # straightforwardly from Euclidean distance definition. For more info, see
         # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.euclidean_distances.html.
         distances = (
-            torch.sum(flat_x**2, dim=1, keepdim=True)
-            + torch.sum(self._embedding**2, dim=1)
-            - 2 * flat_x @ self._embedding.t()
+                torch.sum(flat_x ** 2, dim=1, keepdim=True)
+                + torch.sum(self._embedding ** 2, dim=1)
+                - 2 * flat_x @ self._embedding.t()
         )
 
         # Quantize to closest embedding vector.
@@ -93,7 +100,10 @@ class VectorQuantizer(nn.Module):
             loss += F.mse_loss(quantized, x.detach())
 
         quantized = x + (quantized - x).detach()  # Straight through estimator.
-        return quantized, loss, idxs
+        if self.return_one_hot:
+            one_hot_reshaped = one_hot.view(n, self.n_embeddings, h, w)
+            return quantized, loss, one_hot_reshaped
+        return quantized, loss
 
 
 class ReZeroWrapper(nn.Module):
