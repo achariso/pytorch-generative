@@ -93,7 +93,7 @@ class VectorQuantizer(nn.Module):
             loss += F.mse_loss(quantized, x.detach())
 
         quantized = x + (quantized - x).detach()  # Straight through estimator.
-        return quantized, loss
+        return quantized, loss, idxs
 
 
 class ReZeroWrapper(nn.Module):

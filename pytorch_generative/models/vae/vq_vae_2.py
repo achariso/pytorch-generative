@@ -102,12 +102,12 @@ class VectorQuantizedVAE2(base.VariationalAutoEncoder):
         encoded_b = self._encoder_b(x)
         encoded_t = self._encoder_t(encoded_b)
 
-        quantized_t, vq_loss_t = self._quantizer_t(encoded_t)
-        quantized_b, vq_loss_b = self._quantizer_b(encoded_b)
+        quantized_t, vq_loss_t, idx_t = self._quantizer_t(encoded_t)
+        quantized_b, vq_loss_b, idx_b = self._quantizer_b(encoded_b)
 
         decoded_t = self._decoder_t(quantized_t)
-        xhat = self._decoder_b(torch.cat((self._conv(decoded_t), quantized_b), dim=1))
-        return xhat, 0.5 * (vq_loss_b + vq_loss_t) + F.mse_loss(decoded_t, encoded_b)
+        x_hat = self._decoder_b(torch.cat((self._conv(decoded_t), quantized_b), dim=1))
+        return x_hat, 0.5 * (vq_loss_b + vq_loss_t) + F.mse_loss(decoded_t, encoded_b), idx_t, idx_b
 
     def _sample(self, n_samples):
         raise NotImplementedError("VQ-VAE-2 does not support sampling.")
