@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from ants.pg.pytorch_generative import nn as pg_nn
+from ants.libs.pg.pytorch_generative import nn as pg_nn
 
 
 @torch.jit.script

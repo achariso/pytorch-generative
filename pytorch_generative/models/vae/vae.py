@@ -8,8 +8,8 @@ References (used throughout the code):
 import torch
 from torch import nn
 
-from ants.pg.pytorch_generative.models import base
-from ants.pg.pytorch_generative.models.vae import vaes
+from ants.libs.pg.pytorch_generative.models import base
+from ants.libs.pg.pytorch_generative.models.vae import vaes
 
 
 class VAE(base.VariationalAutoEncoder):
@@ -128,7 +128,7 @@ def reproduce(
     from torch import optim
     from torch.nn import functional as F
 
-    from ants.pg.pytorch_generative import datasets, models, trainer
+    from ants.libs.pg.pytorch_generative import datasets, models, trainer
 
     train_loader, test_loader = debug_loader, debug_loader
     if train_loader is None:

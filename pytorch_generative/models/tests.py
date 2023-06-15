@@ -5,8 +5,8 @@ import unittest
 
 import torch
 
-from ants.pg.pytorch_generative import models
-from ants.pg.pytorch_generative.models import autoregressive, flow, vae
+from ants.libs.pg.pytorch_generative import models
+from ants.libs.pg.pytorch_generative.models import autoregressive, flow, vae
 
 
 class DummyLoader:
@@ -145,7 +145,7 @@ class MultipleChannelsTests(unittest.TestCase):
         self._test_multiple_channels(model)
 
     def test_VeryDeepVAE(self):
-        from ants.pg.pytorch_generative.models.vae.vd_vae import StackConfig
+        from ants.libs.pg.pytorch_generative.models.vae.vd_vae import StackConfig
 
         model = models.VeryDeepVAE(
             in_channels=3,

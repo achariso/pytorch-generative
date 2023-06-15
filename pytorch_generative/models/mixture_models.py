@@ -7,7 +7,7 @@ import torch
 import torch.nn.functional as F
 from torch import distributions, nn
 
-from ants.pg.pytorch_generative.models import base
+from ants.libs.pg.pytorch_generative.models import base
 
 
 class MixtureModel(base.GenerativeModel):

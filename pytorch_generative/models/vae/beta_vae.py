@@ -10,7 +10,7 @@ References (used throughout the code):
     [1]: https://openreview.net/pdf?id=Sy2fzU9gl 
 """
 
-from ants.pg.pytorch_generative.models.vae import vae
+from ants.libs.pg.pytorch_generative.models.vae import vae
 
 
 class BetaVAE(vae.VAE):
@@ -87,7 +87,7 @@ def reproduce(
     from torch import optim
     from torch.nn import functional as F
 
-    from ants.pg.pytorch_generative import datasets, models, trainer
+    from ants.libs.pg.pytorch_generative import datasets, models, trainer
 
     train_loader, test_loader = debug_loader, debug_loader
     if train_loader is None:

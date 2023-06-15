@@ -14,8 +14,8 @@ References (used throughout the file):
 import torch
 from torch import nn
 
-from ants.pg.pytorch_generative import nn as pg_nn
-from ants.pg.pytorch_generative.models import base
+from ants.libs.pg.pytorch_generative import nn as pg_nn
+from ants.libs.pg.pytorch_generative.models import base
 
 
 class TransformerBlock(nn.Module):
@@ -136,7 +136,7 @@ def reproduce(
     from torch.nn import functional as F
     from torch.optim import lr_scheduler
 
-    from ants.pg.pytorch_generative import datasets, models, trainer
+    from ants.libs.pg.pytorch_generative import datasets, models, trainer
 
     train_loader, test_loader = debug_loader, debug_loader
     if train_loader is None:
