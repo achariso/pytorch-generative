@@ -26,7 +26,7 @@ class VectorQuantizer(nn.Module):
                  embedding_dim: int,
                  use_ema: bool = True,
                  ema_decay: float = 0.99,
-                 return_one_hot: bool = False):
+                 return_idx: bool = False):
         """Initializes a new VectorQuantizer instance.
 
         Args:
@@ -38,14 +38,14 @@ class VectorQuantizer(nn.Module):
                 embedding weights instead of gradient descent. Generally, EMA updates
                 lead to much faster convergence.
             ema_decay: Decay rate for exponential moving average parameters.
-            return_one_hot: Whether to return the one-hot encoding of the quantized input.
+            return_idx: Whether to return the one-hot encoding of the quantized input.
         """
         super().__init__()
         self.n_embeddings = n_embeddings
         self.embedding_dim = embedding_dim
         self._use_ema = use_ema
         self._decay = ema_decay
-        self.return_one_hot = return_one_hot
+        self.return_idx = return_idx
 
         embedding = torch.zeros(n_embeddings, embedding_dim)
         # TODO(eugenhotaj): Small optimization: create pre-initialized embedding.
@@ -100,9 +100,9 @@ class VectorQuantizer(nn.Module):
             loss += F.mse_loss(quantized, x.detach())
 
         quantized = x + (quantized - x).detach()  # Straight through estimator.
-        if self.return_one_hot:
-            one_hot_reshaped = one_hot.view(n, self.n_embeddings, h, w)
-            return quantized, loss, one_hot_reshaped
+        if self.return_idx:
+            idx_reshaped = idxs.view(n, 1, h, w)
+            return quantized, loss, idx_reshaped
         return quantized, loss
 
 

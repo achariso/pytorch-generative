@@ -31,7 +31,7 @@ class VectorQuantizedVAE2(base.VariationalAutoEncoder):
             n_embeddings=128,
             embedding_dim=16,
             sample_fn=None,
-            return_one_hot=False,
+            return_idx=False,
     ):
         """Initializes a new VectorQuantizedVAE2 instance.
 
@@ -66,13 +66,13 @@ class VectorQuantizedVAE2(base.VariationalAutoEncoder):
             in_channels=hidden_channels,
             n_embeddings=n_embeddings,
             embedding_dim=embedding_dim,
-            return_one_hot=return_one_hot,
+            return_idx=return_idx,
         )
         self._quantizer_b = vaes.Quantizer(
             in_channels=hidden_channels,
             n_embeddings=n_embeddings,
             embedding_dim=embedding_dim,
-            return_one_hot=return_one_hot,
+            return_idx=return_idx,
         )
         self._decoder_t = vaes.Decoder(
             in_channels=embedding_dim,
@@ -93,7 +93,7 @@ class VectorQuantizedVAE2(base.VariationalAutoEncoder):
             residual_channels=residual_channels,
             stride=2,
         )
-        self.return_one_hot = return_one_hot
+        self.return_idx = return_idx
 
     def forward(self, x):
         """Computes the forward pass.
@@ -106,7 +106,7 @@ class VectorQuantizedVAE2(base.VariationalAutoEncoder):
         encoded_b = self._encoder_b(x)
         encoded_t = self._encoder_t(encoded_b)
 
-        if self.return_one_hot:
+        if self.return_idx:
             quantized_t, vq_loss_t, idx_t = self._quantizer_t(encoded_t)
             quantized_b, vq_loss_b, idx_b = self._quantizer_b(encoded_b)
         else:
@@ -115,7 +115,7 @@ class VectorQuantizedVAE2(base.VariationalAutoEncoder):
 
         decoded_t = self._decoder_t(quantized_t)
         x_hat = self._decoder_b(torch.cat((self._conv(decoded_t), quantized_b), dim=1))
-        if self.return_one_hot:
+        if self.return_idx:
             return x_hat, 0.5 * (vq_loss_b + vq_loss_t) + F.mse_loss(decoded_t, encoded_b), idx_t, idx_b
         return x_hat, 0.5 * (vq_loss_b + vq_loss_t) + F.mse_loss(decoded_t, encoded_b)
 

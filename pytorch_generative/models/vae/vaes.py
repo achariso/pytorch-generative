@@ -244,21 +244,21 @@ class Decoder(nn.Module):
 class Quantizer(nn.Module):
     """Wraps a VectorQuantizer to handle input with arbitrary channels."""
 
-    def __init__(self, in_channels, n_embeddings, embedding_dim, return_one_hot: bool = False):
+    def __init__(self, in_channels, n_embeddings, embedding_dim, return_idx: bool = False):
         """Initializes a new Quantizer instance.
 
         Args:
             in_channels: Number of input channels.
             n_embeddings: Number of VectorQuantizer embeddings.
             embedding_dim: VectorQuantizer embedding dimension.
-            return_one_hot: Whether to return one-hot encoded quantized vectors.
+            return_idx: Whether to return one-hot encoded quantized vectors.
         """
         super().__init__()
         self._net = nn.Sequential(
             nn.Conv2d(
                 in_channels=in_channels, out_channels=embedding_dim, kernel_size=1
             ),
-            pg_nn.VectorQuantizer(n_embeddings, embedding_dim, return_one_hot=return_one_hot),
+            pg_nn.VectorQuantizer(n_embeddings, embedding_dim, return_idx=return_idx),
         )
 
     def forward(self, x):
