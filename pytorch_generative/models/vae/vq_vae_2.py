@@ -9,6 +9,7 @@ References (used throughout the code):
     [1]: https://arxiv.org/pdf/1906.00446.pdf
     [2]: https://arxiv.org/pdf/1711.00937.pdf
 """
+from typing import Tuple
 
 import torch
 from torch import nn
@@ -23,6 +24,7 @@ class VectorQuantizedVAE2(base.VariationalAutoEncoder):
 
     def __init__(
             self,
+            image_size: int or Tuple[int, int],
             in_channels=1,
             out_channels=1,
             hidden_channels=128,
@@ -44,7 +46,7 @@ class VectorQuantizedVAE2(base.VariationalAutoEncoder):
             n_embeddings: Number of VectorQuantizer embeddings.
             embedding_dim: Dimension of the VectorQuantizer embeddings.
         """
-        super().__init__(sample_fn)
+        super().__init__(image_size=image_size, image_channels=in_channels, sample_fn=sample_fn)
 
         self._encoder_b = vaes.Encoder(
             in_channels=in_channels,

@@ -1,6 +1,7 @@
 """Base classes for models."""
 
 import abc
+from typing import Tuple
 
 import torch
 from torch import distributions, nn
@@ -38,24 +39,34 @@ class GenerativeModel(abc.ABC, nn.Module):
         * A `device` property which returns the device of the model's parameters.
     """
 
-    def __call__(self, x, *args, **kwargs):
-        """Saves input tensor attributes so they can be accessed during sampling."""
-        if getattr(self, "_c", None) is None and x.dim() == 4:
-            _, c, h, w = x.shape
-            self._create_shape_buffers(c, h, w)
-        return super().__call__(x, *args, **kwargs)
+    def __init__(self, image_size: int or Tuple[int], image_channels: int = 3, create_shape_buffers: bool = True):
+        super().__init__()
+        if isinstance(image_size, int):
+            image_size = (image_size, image_size)
+        if create_shape_buffers:
+            self._create_shape_buffers(image_channels, *image_size)
+        self.create_shape_buffers = create_shape_buffers
+
+    # def __call__(self, x, *args, **kwargs):
+    #     """Saves input tensor attributes so they can be accessed during sampling."""
+    #     if getattr(self, "_c", None) is None and x.dim() == 4:
+    #         _, c, h, w = x.shape
+    #         self._create_shape_buffers(c, h, w, x.device)
+    #     return super().__call__(x, *args, **kwargs)
 
     def load_state_dict(self, state_dict, strict=True):
         """Registers dynamic buffers before loading the model state."""
-        if "_c" in state_dict and not getattr(self, "_c", None):
+        if self.create_shape_buffers and "_c" in state_dict and not getattr(self, "_c", None):
             c, h, w = state_dict["_c"], state_dict["_h"], state_dict["_w"]
             self._create_shape_buffers(c, h, w)
         super().load_state_dict(state_dict, strict)
 
-    def _create_shape_buffers(self, channels, height, width):
-        channels = channels if torch.is_tensor(channels) else torch.tensor(channels)
-        height = height if torch.is_tensor(height) else torch.tensor(height)
-        width = width if torch.is_tensor(width) else torch.tensor(width)
+    def _create_shape_buffers(self, channels, height, width, device=None):
+        # if device is None:
+        #     device = self.device
+        channels = channels if torch.is_tensor(channels) else torch.tensor(channels, device=device)
+        height = height if torch.is_tensor(height) else torch.tensor(height, device=device)
+        width = width if torch.is_tensor(width) else torch.tensor(width, device=device)
         self.register_buffer("_c", channels)
         self.register_buffer("_h", height)
         self.register_buffer("_w", width)
@@ -85,7 +96,7 @@ class AutoregressiveModel(GenerativeModel):
 
     def _get_conditioned_on(self, n_samples, conditioned_on):
         assert (
-            n_samples is not None or conditioned_on is not None
+                n_samples is not None or conditioned_on is not None
         ), 'Must provided one, and only one, of "n_samples" or "conditioned_on"'
         if conditioned_on is None:
             shape = (n_samples, self._c, self._h, self._w)
@@ -121,8 +132,8 @@ class AutoregressiveModel(GenerativeModel):
 
 
 class VariationalAutoEncoder(GenerativeModel):
-    def __init__(self, sample_fn=None):
-        super().__init__()
+    def __init__(self, sample_fn=None, **kwargs):
+        super().__init__(create_shape_buffers=sample_fn is not None, **kwargs)
         self._sample_fn = sample_fn or _default_sample_fn
 
     @abc.abstractmethod
